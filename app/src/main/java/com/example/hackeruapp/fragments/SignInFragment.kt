@@ -6,15 +6,21 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import com.example.hackeruapp.MainActivity
+import androidx.fragment.app.activityViewModels
+import com.example.hackeruapp.LoginActivity
 import com.example.hackeruapp.R
-import com.example.hackeruapp.managers.LoginManager
 import com.example.hackeruapp.viewmodel.LoginViewModel
+import com.google.firebase.auth.FirebaseAuth
 import org.w3c.dom.Text
 
 class SignInFragment() : Fragment(R.layout.signin_fragment) {
+
+    lateinit var googleGetContent: ActivityResultLauncher<Intent>
+    val firebaseAuth = FirebaseAuth.getInstance()
+    private val loginViewModel: LoginViewModel by activityViewModels()
 
     override fun onResume() {
         super.onResume()
@@ -22,20 +28,20 @@ class SignInFragment() : Fragment(R.layout.signin_fragment) {
         val signInButton = activity.findViewById<Button>(R.id.signin_button)
         val signupLink = activity.findViewById<TextView>(R.id.to_signup)
 
-        val signInUsername = activity.findViewById<EditText>(R.id.signin_username)
-        signInUsername.setText(LoginViewModel.username)
+        val signInUsername = activity.findViewById<EditText>(R.id.signin_email)
+        signInUsername.setText(loginViewModel.email)
         signInUsername.addTextChangedListener {
-            LoginViewModel.username = it.toString()
+            loginViewModel.email = it.toString()
         }
 
         val signInPassword = activity.findViewById<EditText>(R.id.signin_password)
-        signInPassword.setText(LoginViewModel.password)
+        signInPassword.setText(loginViewModel.password)
         signInPassword.addTextChangedListener {
-            LoginViewModel.password = it.toString()
+            loginViewModel.password = it.toString()
         }
 
         signInButton.setOnClickListener {
-            onButtonClick()
+            onLoginClick()
         }
 
         signupLink.setOnClickListener {
@@ -44,15 +50,20 @@ class SignInFragment() : Fragment(R.layout.signin_fragment) {
     }
 
 
-    fun onButtonClick(){
-        val activity = requireActivity()
+    fun onLoginClick() {
+        firebaseAuth.signInWithEmailAndPassword(loginViewModel.email!!,loginViewModel.password!!)
+            .addOnSuccessListener {
+                requireActivity().getPreferences(Context.MODE_PRIVATE).edit()
+                    .putLong("Last_Login", System.currentTimeMillis()).apply()
+                (requireActivity() as LoginActivity).goInApp()
+            }
+            .addOnFailureListener {
+                displayToast("Wrong Email/Password")
+            }
+    }
 
-        if (LoginManager.login(LoginViewModel.username!! ,LoginViewModel.password!!)) {
-            activity.getPreferences(Context.MODE_PRIVATE).edit().putLong("Last_Login",System.currentTimeMillis()).apply()
-            startActivity(Intent(activity,MainActivity::class.java))
-        }else{
-            Toast.makeText(activity,"Wrong Username or Password",Toast.LENGTH_LONG).show()
-        }
+    fun displayToast(text: String) {
+        Toast.makeText(requireActivity(), text, Toast.LENGTH_LONG).show()
     }
 
 }

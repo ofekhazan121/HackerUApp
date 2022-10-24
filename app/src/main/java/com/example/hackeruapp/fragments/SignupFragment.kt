@@ -12,23 +12,22 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.hackeruapp.LoginActivity
 import com.example.hackeruapp.R
-import com.example.hackeruapp.managers.LoginManager
 import com.example.hackeruapp.viewmodel.LoginViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.signup_fragment.*
 
 class SignupFragment() : Fragment(R.layout.signup_fragment) {
     lateinit var googleGetContent: ActivityResultLauncher<Intent>
     val firebaseAuth = FirebaseAuth.getInstance()
+    private val loginViewModel: LoginViewModel by activityViewModels()
     override fun onResume() {
         super.onResume()
 
@@ -36,21 +35,21 @@ class SignupFragment() : Fragment(R.layout.signup_fragment) {
         val signupButton = activity.findViewById<Button>(R.id.signup_button)
         val signInLink = activity.findViewById<TextView>(R.id.to_signin)
 
-        val signupUsername = activity.findViewById<EditText>(R.id.signup_username)
-        signupUsername.setText(LoginViewModel.username)
+        val signupUsername = activity.findViewById<EditText>(R.id.signup_email)
+        signupUsername.setText(loginViewModel.email)
         signupUsername.addTextChangedListener {
-            LoginViewModel.username = it.toString()
+            loginViewModel.email = it.toString()
         }
 
         val signupPassword = activity.findViewById<EditText>(R.id.signup_password)
-        signupPassword.setText(LoginViewModel.password)
+        signupPassword.setText(loginViewModel.password)
         signupPassword.addTextChangedListener {
-            LoginViewModel.password = it.toString()
+            loginViewModel.password = it.toString()
         }
 
 
         signupButton.setOnClickListener {
-            onButtonClick()
+            onSignUpClick()
         }
 
         signInLink.setOnClickListener {
@@ -71,12 +70,6 @@ class SignupFragment() : Fragment(R.layout.signup_fragment) {
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 onGoogleIntentResult(result)
             }
-    }
-
-    fun onButtonClick() {
-        val activity = requireActivity()
-
-        LoginManager.signup(LoginViewModel.username!!, LoginViewModel.password!!)
     }
 
     private fun setOnGoogleSignInClickListener() {
@@ -140,5 +133,24 @@ class SignupFragment() : Fragment(R.layout.signup_fragment) {
 
     fun displayToast(text: String) {
         Toast.makeText(requireActivity(), text, Toast.LENGTH_LONG).show()
+    }
+
+    fun onSignUpClick() {
+        firebaseAuth.createUserWithEmailAndPassword(
+            loginViewModel.email!!,
+            loginViewModel.password!!
+        )
+            .addOnSuccessListener {
+                gotToSignIn()
+            }
+            .addOnFailureListener {
+                displayToast("Try Again Later")
+            }
+
+    }
+
+    fun gotToSignIn() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.login_container, SignInFragment()).commit()
     }
 }

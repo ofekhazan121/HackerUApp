@@ -1,7 +1,9 @@
 package com.example.hackeruapp.viewmodel
 
-object LoginViewModel {
+import androidx.lifecycle.ViewModel
 
-    var username: String ?= null
+class LoginViewModel: ViewModel(){
+
+    var email: String ?= null
     var password: String ?= null
 }
