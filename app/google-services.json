@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "550601098925",
+    "project_id": "hackeruapp-e058d",
+    "storage_bucket": "hackeruapp-e058d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550601098925:android:33a3dd11c59f1ce680e824",
+        "android_client_info": {
+          "package_name": "com.example.hackeruapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "550601098925-vf4nb39iguqgrbbb987jv81n6nii9giu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hackeruapp",
+            "certificate_hash": "8e084f1287e92337ea77ee637f021f8c2b3ef1ea"
+          }
+        },
+        {
+          "client_id": "550601098925-3qt4lo3bndbv1hvrb9gcba2bj2i9e8ev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4ag4Hr4x4AyIkqBaN0NwnNIFYKuGEQqo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550601098925-3qt4lo3bndbv1hvrb9gcba2bj2i9e8ev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
